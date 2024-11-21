@@ -1,0 +1,73 @@
+cd Desktop/docker-hive
+docker-compose up -d
+docker cp C:/forbes.csv docker-hive-hive-server-1:/tmp/forbes.csv
+docker container ls
+docker exec -it docker-hive-hive-server-1 /bin/bash
+hadoop fs -put /tmp/forbes.csv /user/hive/warehouse/forbes.csv
+hive
+show tables;
+CREATE TABLE companies (
+    uri STRING,
+    rank INT,
+    name STRING,
+    country STRING,
+    profits FLOAT,
+    marketValue FLOAT,
+    ceo STRING,
+    revenue FLOAT,
+    headquarters STRING,
+    industry STRING,
+    state STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+describe companies;
+LOAD DATA INPATH '/user/hive/warehouse/forbes.csv' OVERWRITE INTO TABLE companies;
+1-Total des profits :SELECT SUM(profits) AS total_profits FROM companies;
+2-Analyse des revenus par pays :SELECT country, SUM(revenue) AS total_revenue
+FROM companies
+GROUP BY country
+ORDER BY total_revenue DESC;
+3-Recherche d'entreprises avec le plus grand marché boursier :SELECT name, marketValue
+FROM companies
+ORDER BY marketValue DESC
+LIMIT 10;
+4-Analyse de la répartition des industries :SELECT industry, COUNT(*) AS num_companies
+FROM companies
+GROUP BY industry
+ORDER BY num_companies DESC;
+5-Analyse des revenus par industrie : SELECT industry, SUM(revenue) AS total_revenue
+FROM companies
+GROUP BY industry
+ORDER BY total_revenue DESC;
+6-Calculer le profit moyen par entreprise :SELECT AVG(profits) AS average_profit_per_company
+FROM companies;
+7-Trouver les entreprises avec des profits négatifs :SELECT name, profits
+FROM companies
+WHERE profits < 0;
+8-Analyser la distribution des profits par pays :SELECT country, SUM(profits) AS total_profits
+FROM companies
+GROUP BY country
+ORDER BY total_profits DESC;
+9-Calculer le profit total par industrie :
+SELECT industry, SUM(profits) AS total_profits
+FROM companies
+GROUP BY industry
+ORDER BY total_profits DESC;
+10-Trouver les entreprises avec les plus grands revenus :
+SELECT name, revenue
+FROM companies
+ORDER BY revenue DESC
+LIMIT 10;
+
+
+
+
+
+
+
+
+
+
+
